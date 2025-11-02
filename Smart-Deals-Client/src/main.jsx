@@ -5,8 +5,14 @@ import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import RootLayout from './layouts/RootLayout';
 import Home from './component/Home/Home';
-import AllProducts from './component/AllProducts/AllProducts';
+import AllProducts from './component/Products/AllProducts';
 import AuthProvider from './contexts/AuthProvider';
+import Register from './pages/Register';
+import MyProducts from './component/Products/MyProducts';
+import CreateProducts from './component/Products/CreateProducts';
+import MyBids from './component/Products/MyBids';
+import Login from './pages/Login';
+import ProductDetails from './component/Products/ProductDetails';
 
 const router = createBrowserRouter([
   {
@@ -18,8 +24,32 @@ const router = createBrowserRouter([
         Component: Home
       },
       {
+        path: 'register',
+        Component: Register
+      },
+      {
+        path: 'login',
+        Component: Login
+      },
+      {
         path: 'allproducts',
         Component: AllProducts
+      },
+      {
+        path: 'myProducts',
+        Component: MyProducts
+      },
+      {
+        path: 'myBids',
+        Component: MyBids
+      },
+      {
+        path: 'createProducts',
+        Component: CreateProducts
+      },
+      {
+        path: 'productDetails',
+        Component: ProductDetails
       }
     ]
   },

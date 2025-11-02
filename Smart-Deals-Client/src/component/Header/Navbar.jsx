@@ -1,7 +1,10 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Navbar = () => {
+  const { user, logOut } = useContext(AuthContext);
+
   const links = (
     <>
       <li>
@@ -10,17 +13,31 @@ const Navbar = () => {
       <li>
         <NavLink to="/allProducts">All Products</NavLink>
       </li>
-      <li>
-        <NavLink to="/myProducts">My Products</NavLink>
-      </li>
-      <li>
-        <NavLink to="/myBids">My Bids</NavLink>
-      </li>
-      <li>
-        <NavLink to="/createProducts">Create Products</NavLink>
-      </li>
+      {user && (
+        <>
+          <li>
+            <NavLink to="/myProducts">My Products</NavLink>
+          </li>
+          <li>
+            <NavLink to="/myBids">My Bids</NavLink>
+          </li>
+          <li>
+            <NavLink to="/createProducts">Create Products</NavLink>
+          </li>
+        </>
+      )}
     </>
   );
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        console.log("Successfully LogOut");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   return (
     <div>
@@ -52,7 +69,7 @@ const Navbar = () => {
               {links}
             </ul>
           </div>
-          <a className="text-2xl font-bold ml-2 lg:ml-0">
+          <a href="/" className="text-2xl font-bold ml-2 lg:ml-0">
             Smart <span className="text-purple-600">Deals</span>
           </a>
         </div>
@@ -60,11 +77,37 @@ const Navbar = () => {
           <ul className="menu menu-horizontal px-1 font-semibold">{links}</ul>
         </div>
         <div className="navbar-end">
-          <img
-            className="w-10 rounded-full"
-            src="https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-            alt="User Photo"
-          />
+          {user ? (
+            <div className="flex items-center gap-3">
+              <img
+                className="w-10 rounded-full"
+                src={user.photoURL}
+                alt={user.displayName}
+              />
+              <button onClick={handleLogOut} className="btn bg-purple-400
+              text-white px-6">
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                to="/register"
+                className="bg-linear-to-r from-[#632EE3] 
+                to-[#9F62F2] text-white font-semibold px-8 py-2 rounded
+                hover:scale-110 transition"
+              >
+                Register
+              </Link>
+              <Link
+                to="/login"
+                className="border border-linear-to-r from-[#632EE3] 
+                to-[#9F62F2] rounded text-purple-600 px-6 py-2 hover:scale-110 transition"
+              >
+                Login
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

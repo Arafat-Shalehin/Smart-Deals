@@ -33,7 +33,25 @@ async function run() {
     const db = client.db('smart_db');
     const productsCollection = db.collection('products');
     const bidsCollection = db.collection('bids');
+    const usersCollection = db.collection('users');
 
+    // Users APIS 
+    app.post('/users', async(req, res) => {
+      const newUsers = req.body;
+
+      const email = req.body.email;
+      const query = {email: email}
+      const existingUser = await usersCollection.findOne(query);
+      if(existingUser) {
+        res.send({message: 'User already exits. Do not need to insert it again.'})
+      }
+      else{
+        const result = await usersCollection.insertOne(newUsers);
+        res.send(result);
+      }
+    })
+
+    // Product APIS
     app.get('/products', async(req, res) => {
 
       const email = req.query.email;
@@ -43,6 +61,12 @@ async function run() {
       }
 
       const cursor = productsCollection.find(query).sort({price_min: 1});
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/latest-products', async(req, res) => {
+      const cursor = productsCollection.find().sort({created_at: -1}).limit(6);
       const result = await cursor.toArray();
       res.send(result);
     })
