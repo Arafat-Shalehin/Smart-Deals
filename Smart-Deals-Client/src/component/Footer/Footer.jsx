@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-evenly gap-8">
             {/* Brand Section */}
             <div className="space-y-4">
-              <h3 className="text-xl font-bold">Smart <span className='text-purple-700'>Deals</span></h3>
+              <h3 className="text-xl font-bold">Smart<span className='text-accent'>Deals</span></h3>
               <p className="text-sm text-gray-400 leading-relaxed">
                 Your trusted marketplace for authentic <br /> local products. Discover the best deals from <br /> across Bangladesh.
               </p>

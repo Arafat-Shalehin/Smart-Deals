@@ -1,5 +1,6 @@
 import React from "react";
 import LatestProducts from "../Products/LatestProducts";
+import Hero from "../Hero/Hero";
 
 const latestProductsPromise = fetch(
   "http://localhost:3000/latest-products"
@@ -8,7 +9,7 @@ const latestProductsPromise = fetch(
 const Home = () => {
   return (
     <div>
-      <h2>Home</h2>
+      <Hero></Hero>
       <LatestProducts latestProductsPromise={latestProductsPromise}></LatestProducts>
     </div>
   );

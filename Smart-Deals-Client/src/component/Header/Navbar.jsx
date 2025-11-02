@@ -5,28 +5,33 @@ import { AuthContext } from "../../contexts/AuthContext";
 const Navbar = () => {
   const { user, logOut } = useContext(AuthContext);
 
+  const getNavLinkClass = ({ isActive }) =>
+    isActive
+      ? "bg-linear-to-r from-accent to-secondary text-white" // active style
+      : "text-gray-700"; // normal style
+
+  const linksData = [
+    { to: "/", label: "Home" },
+    { to: "/allProducts", label: "All Products" },
+    ...(user
+      ? [
+          { to: "/myProducts", label: "My Products" },
+          { to: "/myBids", label: "My Bids" },
+          { to: "/createProducts", label: "Create Products" },
+        ]
+      : []),
+  ];
+
   const links = (
-    <>
-      <li>
-        <NavLink to="/">Home</NavLink>
-      </li>
-      <li>
-        <NavLink to="/allProducts">All Products</NavLink>
-      </li>
-      {user && (
-        <>
-          <li>
-            <NavLink to="/myProducts">My Products</NavLink>
-          </li>
-          <li>
-            <NavLink to="/myBids">My Bids</NavLink>
-          </li>
-          <li>
-            <NavLink to="/createProducts">Create Products</NavLink>
-          </li>
-        </>
-      )}
-    </>
+    <div className="flex flex-col lg:flex-row lg:items-center lg:gap-3 gap-2">
+      {linksData.map(({ to, label }) => (
+        <li key={to}>
+          <NavLink to={to} className={getNavLinkClass}>
+            {label}
+          </NavLink>
+        </li>
+      ))}
+    </div>
   );
 
   const handleLogOut = () => {
@@ -64,17 +69,19 @@ const Navbar = () => {
             <ul
               tabIndex="-1"
               className="menu menu-sm dropdown-content bg-base-100 
-              rounded-box z-1 mt-3 w-52 p-2 shadow font-semibold"
+              rounded-box z-1 w-30 mt-3 p-2 shadow font-semibold"
             >
               {links}
             </ul>
           </div>
-          <a href="/" className="text-2xl font-bold ml-2 lg:ml-0">
-            Smart <span className="text-purple-600">Deals</span>
+          <a href="/" className="text-2xl text-primary font-bold ml-2 lg:ml-0">
+            Smart <span className="text-accent">Deals</span>
           </a>
         </div>
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal px-1 font-semibold">{links}</ul>
+          <ul className="menu menu-horizontal px-1 font-semibold">
+            {links}
+          </ul>
         </div>
         <div className="navbar-end">
           {user ? (
@@ -84,8 +91,12 @@ const Navbar = () => {
                 src={user.photoURL}
                 alt={user.displayName}
               />
-              <button onClick={handleLogOut} className="btn bg-purple-400
-              text-white px-6">
+              <button
+                onClick={handleLogOut}
+                className="
+              border border-secondary text-accent px-6 py-2 
+              rounded font-semibold hover:opacity-90"
+              >
                 Sign Out
               </button>
             </div>
@@ -93,16 +104,16 @@ const Navbar = () => {
             <div className="flex items-center gap-3">
               <Link
                 to="/register"
-                className="bg-linear-to-r from-[#632EE3] 
-                to-[#9F62F2] text-white font-semibold px-8 py-2 rounded
+                className="bg-linear-to-r from-accent to-secondary text-white
+                font-semibold px-8 py-2 rounded
                 hover:scale-110 transition"
               >
                 Register
               </Link>
               <Link
                 to="/login"
-                className="border border-linear-to-r from-[#632EE3] 
-                to-[#9F62F2] rounded text-purple-600 px-6 py-2 hover:scale-110 transition"
+                className="border border-linear-to-r from-accent 
+                to-secondary rounded text-accent px-6 py-2 hover:scale-110 transition"
               >
                 Login
               </Link>
