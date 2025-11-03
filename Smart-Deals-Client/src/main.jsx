@@ -1,18 +1,19 @@
-import { Children, Component, StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
+import { Children, Component, StrictMode, Suspense } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
-import RootLayout from './layouts/RootLayout';
-import Home from './component/Home/Home';
-import AllProducts from './component/Products/AllProducts';
-import AuthProvider from './contexts/AuthProvider';
-import Register from './pages/Register';
-import MyProducts from './component/Products/MyProducts';
-import CreateProducts from './component/Products/CreateProducts';
-import MyBids from './component/Products/MyBids';
-import Login from './pages/Login';
-import ProductDetails from './component/Products/ProductDetails';
+import RootLayout from "./layouts/RootLayout";
+import Home from "./component/Home/Home";
+import AllProducts from "./component/Products/AllProducts";
+import AuthProvider from "./contexts/AuthProvider";
+import Register from "./pages/Register";
+import MyProducts from "./component/Products/MyProducts";
+import CreateProducts from "./component/Products/CreateProducts";
+import MyBids from "./component/Products/MyBids";
+import Login from "./pages/Login";
+import ProductDetails from "./component/Products/ProductDetails";
+import Loader from "./component/Loader/Loader";
 
 const router = createBrowserRouter([
   {
@@ -21,44 +22,49 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        Component: Home
+        Component: Home,
       },
       {
-        path: 'register',
-        Component: Register
+        path: "register",
+        Component: Register,
       },
       {
-        path: 'login',
-        Component: Login
+        path: "login",
+        Component: Login,
       },
       {
-        path: 'allproducts',
-        Component: AllProducts
+        path: "allproducts",
+        loader: () => fetch("http://localhost:3000/products"),
+        Component: AllProducts,
       },
       {
-        path: 'myProducts',
-        Component: MyProducts
+        path: "/productDetails/:id",
+        Component: ProductDetails,
+        loader: ({ params }) =>
+          fetch(`http://localhost:3000/products/${params.id}`),
       },
       {
-        path: 'myBids',
-        Component: MyBids
+        path: "myProducts",
+        Component: MyProducts,
       },
       {
-        path: 'createProducts',
-        Component: CreateProducts
+        path: "myBids",
+        Component: MyBids,
       },
       {
-        path: 'productDetails',
-        Component: ProductDetails
-      }
-    ]
+        path: "createProducts",
+        Component: CreateProducts,
+      },
+    ],
   },
-])
+]);
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<Loader />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </AuthProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);

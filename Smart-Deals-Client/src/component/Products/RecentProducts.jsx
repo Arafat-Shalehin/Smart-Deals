@@ -1,8 +1,16 @@
 import React from "react";
+import { useNavigation } from "react-router-dom";
+import Loader from "../Loader/Loader";
 
 const RecentProducts = ({ product }) => {
 
   const { image, title, usage, price_max, price_min } = product;
+
+  const navigation = useNavigation();
+
+  if (navigation.state === "loading") {
+    return <Loader />;
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 w-90 lg:w-120 mx-auto p-3">

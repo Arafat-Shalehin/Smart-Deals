@@ -1,12 +1,15 @@
-import React, { use } from "react";
-
-const allProductsPromise = fetch("http://localhost:3000/products").then((res) =>
-  res.json()
-);
+import React from "react";
+import { Link, useLoaderData, useNavigation } from "react-router-dom";
+import Loader from "../Loader/Loader";
 
 const AllProducts = () => {
-  const allProduct = use(allProductsPromise);
-  console.log(allProduct);
+  const allProduct = useLoaderData();
+
+  const navigation = useNavigation();
+
+  if (navigation.state === "loading") {
+    return <Loader />;
+  }
 
   return (
     <div>
@@ -37,9 +40,11 @@ const AllProducts = () => {
                 </div>
 
                 {/* Button */}
-                <button className="mt-3 w-full border border-purple-500 text-purple-600 text-sm font-medium py-2 rounded-md hover:bg-purple-50 transition">
-                  View Details
-                </button>
+                <Link to={`/productDetails/${product._id}`}>
+                  <button className="mt-3 w-full border border-purple-500 text-purple-600 text-sm font-medium py-2 rounded-md hover:bg-purple-50 transition">
+                    View Details
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
