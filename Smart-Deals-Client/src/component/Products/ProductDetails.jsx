@@ -1,36 +1,112 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ArrowLeft, MapPin, Mail, X } from "lucide-react";
 import tabImg from "../../assets/thumbnail-card.png";
 import profilePic from "../../assets/thumb-profile.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLoaderData } from "react-router-dom";
+import { AuthContext } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 const ProductDetails = () => {
+  const product = useLoaderData();
+  // console.log(product);
 
-    const product = useLoaderData();
-    console.log(product);
+  const { user } = useContext(AuthContext);
+
+  const [bids, setBids] = useState([]);
+
+  const {
+    image,
+    condition,
+    usage,
+    description,
+    title,
+    category,
+    price_min,
+    price_max,
+    _id,
+    created_at,
+    seller_image,
+    seller_name,
+    email,
+    location,
+    seller_contact,
+    status,
+  } = product;
+
+  useEffect(() => {
+    fetch(`http://localhost:3000/products/bids/${_id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("Bids for this product", data);
+        setBids(data);
+      });
+  }, [_id]);
 
   const [showOfferModal, setShowOfferModal] = useState(false);
-  const [formData, setFormData] = useState({
-    buyerName: "",
-    buyerEmail: "",
-    imageUrl: "",
-    price: "",
-    comment: "",
-  });
 
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  // <div>
+  //   {/* // const [formData, setFormData] = useState({
+  // //   buyerName: "",
+  // //   buyerEmail: "",
+  // //   imageUrl: "",
+  // //   bidPrice: "",
+  // //   comment: "",
+  // // });
+
+  // // const handleInputChange = (e) => {
+  //   // setFormData({
+  //   //   ...formData,
+  //   //   [e.target.name]: e.target.value,
+  //   // });
+  // //   console.log(e);
+  // // }; */}
+  // </div>
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    // console.log("Form submitted:", formData);
     // Handle form submission here
-    setShowOfferModal(false);
+
+    const name = e.target.name.value;
+    const email = e.target.email.value;
+    const bid = e.target.price.value;
+
+    console.log({ _id, name, email, bid });
+
+    const newBid = {
+      product: _id,
+      buyer_name: name,
+      buyer_email: email,
+      buyer_image: user?.photoURL,
+      bid_price: bid,
+      status: "pending",
+    };
+
+    fetch("http://localhost:3000/bids", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(newBid),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          setShowOfferModal(false);
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Your bid has been placed.",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          newBid._id = data.insertedId;
+          const newBids = [...bids, newBid];
+          newBids.sort((a,b) => b.bid_price - a.bid_price);
+          setBids(newBids);
+        }
+      });
   };
 
   return (
@@ -38,7 +114,7 @@ const ProductDetails = () => {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-8 md:p-15 p-5">
         <div className="md:w-[50%]">
           <div className="">
-            <img className="w-full" src={tabImg} alt={tabImg} />
+            <img className="w-full" src={tabImg} alt="Product Image" />
           </div>
           <div
             className="bg-[#FFFFFF] border border-gray-300 
@@ -49,25 +125,14 @@ const ProductDetails = () => {
             </p>
             <div className="flex items-center justify-between">
               <p className="text-secondary font-semibold">
-                Condition: <span className="text-primary">New</span>
+                Condition: <span className="text-primary">{condition}</span>
               </p>
               <p className="text-secondary font-semibold">
-                Usage Time: <span className="text-primary">3 Month</span>
+                Usage Time: <span className="text-primary">{usage}</span>
               </p>
             </div>
             <hr className="border-[#444444] my-3" />
-            <p className="text-[#969A9D] font-semibold">
-              It is a long established fact that a reader will be distracted by
-              the readable content of a page when looking at its layout. The
-              point of using Lorem Ipsum is that it has a more-or-less normal
-              distribution of letters, as opposed to using 'Content here,
-              content here', making it look like readable English. Many desktop
-              publishing packages and web page editors now use Lorem Ipsum as
-              their default model text, and a search for 'lorem ipsum' will
-              uncover many web sites still in their infancy. Various versions
-              have evolved over the years, sometimes by accident, sometimes on
-              purpose (injected humour and the like).
-            </p>
+            <p className="text-[#969A9D] font-semibold">{description}</p>
           </div>
         </div>
 
@@ -77,21 +142,23 @@ const ProductDetails = () => {
           </Link>
 
           <h1 className="font-bold lg:text-5xl md:text-3xl text-2xl">
-            Yamaha Fz Guitar For Sale
+            {title}
           </h1>
 
           <span
             className="bg-[#632EE330] text-accent 
           rounded-2xl text-sm px-2"
           >
-            Art and Hobbies
+            {category}
           </span>
 
           <div
             className="bg-[#FFFFFF] border border-gray-300 
           rounded p-2 mt-4 py-5 px-4"
           >
-            <p className="text-[#4CAF50] lg:text-2xl font-bold">$22.5 - 30</p>
+            <p className="text-[#4CAF50] lg:text-2xl font-bold">
+              ${price_min} - {price_max}
+            </p>
             <p className="text-primary font-semibold">Price starts from </p>
           </div>
 
@@ -103,11 +170,11 @@ const ProductDetails = () => {
               Product Details
             </p>
             <p className="text-[#444444]">
-              <span className="text-primary">Product ID:</span>{" "}
-              68f753ae2174ca368ec882f4
+              <span className="text-primary">Product ID: </span>
+              {_id}
             </p>
             <p className="text-[#444444]">
-              <span className="text-primary">Posted:</span> 10/19/2024
+              <span className="text-primary">Posted:</span> {created_at}
             </p>
           </div>
 
@@ -119,24 +186,28 @@ const ProductDetails = () => {
               Seller Information
             </h1>
             <div className="flex items-center gap-3 my-5">
-              <img src={profilePic} alt="Seller Image" />
+              <img
+                className="w-10 rounded-full"
+                src={seller_image}
+                alt="Seller Image"
+              />
               <div className="font-semibold text-[#444444]">
-                <p>Sara Chen</p>
-                <p>crafts.by.sara@shop.net</p>
+                <p>{seller_name}</p>
+                <p>{email}</p>
               </div>
             </div>
             <p className="text-primary font-semibold">
-              Location: <span className="text-[#444444]">Los Angeles, CA</span>
+              Location: <span className="text-[#444444]">{location}</span>
             </p>
             <p className="text-primary font-semibold">
-              Contact: <span className="text-[#444444]">sara.chen_contact</span>
+              Contact: <span className="text-[#444444]">{seller_contact}</span>
             </p>
             <p
               className="font-semibold text-primary flex items-center
             gap-2 mt-3"
             >
               Status:
-              <span className="bg-[#FFC107] rounded-2xl px-3">on Sale</span>
+              <span className="bg-[#FFC107] rounded-2xl px-3">{status}</span>
             </p>
           </div>
           {/* Buy Button */}
@@ -147,6 +218,83 @@ const ProductDetails = () => {
             I Want Buy This Product
           </button>
         </div>
+      </div>
+      {/* Bid for product */}
+      <div className="md:p-15 p-5">
+        <h1 className="text-4xl font-bold">
+          Bids For This Products:{" "}
+          <span className="text-accent">({bids.length})</span>
+        </h1>
+        {bids.length > 0 && <div className="w-full mx-auto my-10 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+          <table className="min-w-full text-left text-sm text-gray-700">
+            <thead className="bg-gray-50 border-b border-[#E9E9E9]">
+              <tr>
+                <th className="py-3 px-4 font-medium">SL No</th>
+                <th className="py-3 px-4 font-medium">Product</th>
+                <th className="py-3 px-4 font-medium">Seller</th>
+                <th className="py-3 px-4 font-medium">Bid Price</th>
+                <th className="py-3 px-4 font-medium text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bids.map((bid, index) => (
+                <tr
+                  key={index}
+                  className="border-b border-[#E9E9E9] hover:bg-gray-50 transition"
+                >
+                  <td className="py-3 px-4">{index + 1}</td>
+
+                  {/* Product Info */}
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={image}
+                        alt="Product Image"
+                        className="w-10 h-10 rounded-md object-cover"
+                      />
+                      <div>
+                        <p className="font-semibold text-gray-800">{title}</p>
+                        <p className="text-sm text-gray-500">
+                          ${price_min} - {price_max}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Seller Info */}
+                  <td className="py-3 px-4">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={seller_image}
+                        alt="Seller Image"
+                        className="w-9 h-9 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="font-semibold text-gray-800">
+                          {seller_name}
+                        </p>
+                        <p className="text-xs text-gray-500">{email}</p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Bid Price */}
+                  <td className="py-3 px-4 font-semibold">${bid.bid_price}</td>
+
+                  {/* Actions */}
+                  <td className="py-3 px-4 text-center">
+                    <button className="px-3 py-1.5 rounded-md text-sm font-medium border border-green-500 text-green-600 hover:bg-green-50 transition">
+                      Accept Offer
+                    </button>
+                    <button className="ml-2 px-3 py-1.5 rounded-md text-sm font-medium border border-red-400 text-red-500 hover:bg-red-50 transition">
+                      Reject Offer
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>}
       </div>
       {showOfferModal && (
         <motion.div
@@ -184,9 +332,8 @@ const ProductDetails = () => {
                   </label>
                   <input
                     type="text"
-                    name="buyerName"
-                    value={formData.buyerName}
-                    onChange={handleInputChange}
+                    name="name"
+                    defaultValue={user?.displayName}
                     placeholder="Your name"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   />
@@ -197,9 +344,8 @@ const ProductDetails = () => {
                   </label>
                   <input
                     type="email"
-                    name="buyerEmail"
-                    value={formData.buyerEmail}
-                    onChange={handleInputChange}
+                    name="email"
+                    defaultValue={user?.email}
                     placeholder="Your Email"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                   />
@@ -213,8 +359,7 @@ const ProductDetails = () => {
                 <input
                   type="text"
                   name="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={handleInputChange}
+                  defaultValue={user?.photoURL}
                   placeholder="https:// your_img_url"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                 />
@@ -227,8 +372,6 @@ const ProductDetails = () => {
                 <input
                   type="text"
                   name="price"
-                  value={formData.price}
-                  onChange={handleInputChange}
                   placeholder="e.g. At least thousand"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                 />
@@ -240,8 +383,6 @@ const ProductDetails = () => {
                 </label>
                 <textarea
                   name="comment"
-                  value={formData.comment}
-                  onChange={handleInputChange}
                   placeholder="e.g. +1-543-1234"
                   rows="3"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm resize-none"

@@ -1,9 +1,8 @@
 import React from "react";
-import { useNavigation } from "react-router-dom";
+import { Link, useNavigation } from "react-router-dom";
 import Loader from "../Loader/Loader";
 
 const RecentProducts = ({ product }) => {
-
   const { image, title, usage, price_max, price_min } = product;
 
   const navigation = useNavigation();
@@ -24,13 +23,17 @@ const RecentProducts = ({ product }) => {
         <h2 className="text-lg font-medium text-gray-800 leading-tight line-clamp-1">
           {title} [ {usage} ]
         </h2>
-        <p className="text-purple-600 text-lg font-medium mt-1">$ {price_min} - {price_max}</p>
+        <p className="text-purple-600 text-lg font-medium mt-1">
+          $ {price_min} - {price_max}
+        </p>
       </div>
 
       {/* Button */}
-      <button className="mt-3 w-full border border-purple-500 text-purple-600 text-sm font-medium py-2 rounded-md hover:bg-purple-50 transition">
-        View Details
-      </button>
+      <Link to={`/productDetails/${product._id}`}>
+        <button className="mt-3 w-full border border-purple-500 text-purple-600 text-sm font-medium py-2 rounded-md hover:bg-purple-50 transition">
+          View Details
+        </button>
+      </Link>
     </div>
   );
 };

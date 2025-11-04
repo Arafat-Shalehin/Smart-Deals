@@ -36,12 +36,14 @@ const router = createBrowserRouter([
         path: "allproducts",
         loader: () => fetch("http://localhost:3000/products"),
         Component: AllProducts,
+        hydrateFallbackElement:<Loader />
       },
       {
         path: "/productDetails/:id",
         Component: ProductDetails,
         loader: ({ params }) =>
           fetch(`http://localhost:3000/products/${params.id}`),
+        hydrateFallbackElement:<Loader />
       },
       {
         path: "myProducts",
@@ -63,7 +65,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <Suspense fallback={<Loader />}>
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
       </Suspense>
     </AuthProvider>
   </StrictMode>
