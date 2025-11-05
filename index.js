@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config()
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -40,11 +41,30 @@ const verifyFirebaseToken = async (req, res, next) => {
   } catch{
     return res.status(401).send({message: 'unauthorized access'})
   }
-  
-  next();
 }
 
-// Vqjr3otAMhwon6an
+const verifyJWTToken = (req, res, next) => {
+  console.log('In middleware',req.headers);
+
+  const authorization = req.headers.authorization;
+  if(!authorization) {
+    return res.status(401).send({message: 'unauthorized access'})
+  }
+  const token = authorization.split(' ')[1];
+  if(!token){
+    return res.status(401).send({message: 'unauthorized access'})
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET,(err, decoded) => {
+    if(err){
+      return res.status(401).send({message: 'unauthorized access'});
+    }
+
+    req.token_email = decoded.email;
+    next();
+  })
+
+}
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@crud-server.b5xdndi.mongodb.net/?appName=Crud-Server`;
 
@@ -70,6 +90,14 @@ async function run() {
     const productsCollection = db.collection('products');
     const bidsCollection = db.collection('bids');
     const usersCollection = db.collection('users');
+
+    // Jwt related APIs
+
+    app.post('/getToken', async (req, res) => {
+      const loggedUser = req.body;
+      const token = jwt.sign(loggedUser, process.env.JWT_SECRET, {expiresIn: '1h'});
+      res.send({token: token})
+    })
 
     // Users APIS 
     app.post('/users', async(req, res) => {
@@ -143,7 +171,7 @@ async function run() {
     })
 
     // bids related apis
-    app.get('/bids', logger, verifyFirebaseToken, async(req, res) => {
+    app.get('/bids', logger, verifyFirebaseToken, verifyJWTToken, async(req, res) => {
 
       console.log('Headers', req.headers);
 
