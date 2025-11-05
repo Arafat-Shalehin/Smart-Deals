@@ -76,6 +76,12 @@ const ProductDetails = () => {
 
     const newBid = {
       product: _id,
+      productImage: image,
+      productName: title,
+      productPrice: price_min,
+      sellerImage: seller_image,
+      sellerName: seller_name,
+      sellerContact: seller_contact,
       buyer_name: name,
       buyer_email: email,
       buyer_image: user?.photoURL,
@@ -103,7 +109,7 @@ const ProductDetails = () => {
           });
           newBid._id = data.insertedId;
           const newBids = [...bids, newBid];
-          newBids.sort((a,b) => b.bid_price - a.bid_price);
+          newBids.sort((a, b) => b.bid_price - a.bid_price);
           setBids(newBids);
         }
       });
@@ -225,76 +231,80 @@ const ProductDetails = () => {
           Bids For This Products:{" "}
           <span className="text-accent">({bids.length})</span>
         </h1>
-        {bids.length > 0 && <div className="w-full mx-auto my-10 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <table className="min-w-full text-left text-sm text-gray-700">
-            <thead className="bg-gray-50 border-b border-[#E9E9E9]">
-              <tr>
-                <th className="py-3 px-4 font-medium">SL No</th>
-                <th className="py-3 px-4 font-medium">Product</th>
-                <th className="py-3 px-4 font-medium">Seller</th>
-                <th className="py-3 px-4 font-medium">Bid Price</th>
-                <th className="py-3 px-4 font-medium text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bids.map((bid, index) => (
-                <tr
-                  key={index}
-                  className="border-b border-[#E9E9E9] hover:bg-gray-50 transition"
-                >
-                  <td className="py-3 px-4">{index + 1}</td>
-
-                  {/* Product Info */}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={image}
-                        alt="Product Image"
-                        className="w-10 h-10 rounded-md object-cover"
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-800">{title}</p>
-                        <p className="text-sm text-gray-500">
-                          ${price_min} - {price_max}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Seller Info */}
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={seller_image}
-                        alt="Seller Image"
-                        className="w-9 h-9 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-semibold text-gray-800">
-                          {seller_name}
-                        </p>
-                        <p className="text-xs text-gray-500">{email}</p>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Bid Price */}
-                  <td className="py-3 px-4 font-semibold">${bid.bid_price}</td>
-
-                  {/* Actions */}
-                  <td className="py-3 px-4 text-center">
-                    <button className="px-3 py-1.5 rounded-md text-sm font-medium border border-green-500 text-green-600 hover:bg-green-50 transition">
-                      Accept Offer
-                    </button>
-                    <button className="ml-2 px-3 py-1.5 rounded-md text-sm font-medium border border-red-400 text-red-500 hover:bg-red-50 transition">
-                      Reject Offer
-                    </button>
-                  </td>
+        {bids.length > 0 && (
+          <div className="w-full mx-auto my-10 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <table className="min-w-full text-left text-sm text-gray-700">
+              <thead className="bg-gray-50 border-b border-[#E9E9E9]">
+                <tr>
+                  <th className="py-3 px-4 font-medium">SL No</th>
+                  <th className="py-3 px-4 font-medium">Product</th>
+                  <th className="py-3 px-4 font-medium">Seller</th>
+                  <th className="py-3 px-4 font-medium">Bid Price</th>
+                  <th className="py-3 px-4 font-medium text-center">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>}
+              </thead>
+              <tbody>
+                {bids.map((bid, index) => (
+                  <tr
+                    key={index}
+                    className="border-b border-[#E9E9E9] hover:bg-gray-50 transition"
+                  >
+                    <td className="py-3 px-4">{index + 1}</td>
+
+                    {/* Product Info */}
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={image}
+                          alt="Product Image"
+                          className="w-10 h-10 rounded-md object-cover"
+                        />
+                        <div>
+                          <p className="font-semibold text-gray-800">{title}</p>
+                          <p className="text-sm text-gray-500">
+                            ${price_min} - {price_max}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Seller Info */}
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={seller_image}
+                          alt="Seller Image"
+                          className="w-9 h-9 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {seller_name}
+                          </p>
+                          <p className="text-xs text-gray-500">{email}</p>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Bid Price */}
+                    <td className="py-3 px-4 font-semibold">
+                      ${bid.bid_price}
+                    </td>
+
+                    {/* Actions */}
+                    <td className="py-3 px-4 text-center">
+                      <button className="px-3 py-1.5 rounded-md text-sm font-medium border border-green-500 text-green-600 hover:bg-green-50 transition">
+                        Accept Offer
+                      </button>
+                      <button className="ml-2 px-3 py-1.5 rounded-md text-sm font-medium border border-red-400 text-red-500 hover:bg-red-50 transition">
+                        Reject Offer
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
       {showOfferModal && (
         <motion.div
