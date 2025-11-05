@@ -10,6 +10,8 @@ const Register = () => {
       .then((result) => {
         console.log(result);
 
+        if (!result.user) return;
+
         const newUser = {
           name: result.user.displayName,
           photo: result.user.photoURL,
@@ -21,7 +23,7 @@ const Register = () => {
           headers: {
             "content-type": "application/json",
           },
-          body: JSON.stringify(newUser)
+          body: JSON.stringify(newUser),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -29,7 +31,11 @@ const Register = () => {
           });
       })
       .catch((error) => {
-        console.log(error);
+        if (error.code === "auth/popup-closed-by-user") {
+          console.warn("User closed the popup before signing in.");
+        } else {
+          console.error("Google Sign-In Error:", error);
+        }
       });
   };
 
@@ -63,7 +69,11 @@ const Register = () => {
                   placeholder="Give your image URL"
                 />
                 <label className="label">Email</label>
-                <input type="email" className="input mb-2" placeholder="Email" />
+                <input
+                  type="email"
+                  className="input mb-2"
+                  placeholder="Email"
+                />
                 <label className="label">Password</label>
                 <input
                   type="password"
