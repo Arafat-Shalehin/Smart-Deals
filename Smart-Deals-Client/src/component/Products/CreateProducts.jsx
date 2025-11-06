@@ -1,7 +1,68 @@
+// import axios from "axios";
 import React, { useState } from "react";
+import Swal from "sweetalert2";
+import useAuth from "../../hooks/useAuth";
+// import useAxios from "../../hooks/useAxios";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const CreateProductForm = () => {
   const [condition, setCondition] = useState("Brand New");
+
+  const { user } = useAuth();
+  // const axiosInstance = useAxios();
+  const axiosSecure = useAxiosSecure();
+
+  const handleCreateAProduct = (e) => {
+    e.preventDefault();
+
+    const title = e.target.title.value;
+    const productImage = e.target.productImage.value;
+    const min_price = e.target.min_price.value;
+    const max_price = e.target.max_price.value;
+
+    console.log({ title, productImage, min_price, max_price });
+
+    const newProduct = { title, productImage, min_price, max_price };
+
+    // axios.post("http://localhost:3000/products", newProduct).then((data) => {
+    //   console.log(data.data);
+    //   if (data.data.insertedId) {
+    //     Swal.fire({
+    //       title: "Your product has been created",
+    //       icon: "success",
+    //       position: 'center',
+    //       timer: 1500,
+    //       showConfirmButton: false,
+    //     });
+    //   }
+    // });
+
+    // axiosInstance.post("/products", newProduct).then((data) => {
+    //   console.log(data.data);
+    //     if (data.data.insertedId) {
+    //       Swal.fire({
+    //         title: "Your product has been created",
+    //         icon: "success",
+    //         position: 'center',
+    //         timer: 1500,
+    //         showConfirmButton: false,
+    //       });
+    //     }
+    // });
+
+    axiosSecure.post("/products", newProduct).then((data) => {
+      console.log(data.data);
+      if (data.data.insertedId) {
+        Swal.fire({
+          title: "Your product has been created",
+          icon: "success",
+          position: "center",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
 
   return (
     <div className="w-[95%] sm:w-[90%] md:w-[80%] lg:w-[60%] xl:w-[50%] mx-auto bg-white p-6 sm:p-8 rounded-2xl shadow-md mt-10 mb-10">
@@ -9,7 +70,7 @@ const CreateProductForm = () => {
         Create A Product
       </h2>
 
-      <form className="space-y-5">
+      <form onSubmit={handleCreateAProduct} className="space-y-5">
         {/* Title & Category */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -18,6 +79,7 @@ const CreateProductForm = () => {
             </label>
             <input
               type="text"
+              name="title"
               placeholder="e.g. Yamaha Fz Guitar for Sale"
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base outline-none focus:ring-2 focus:ring-purple-500"
             />
@@ -44,6 +106,7 @@ const CreateProductForm = () => {
             </label>
             <input
               type="number"
+              name="min_price"
               placeholder="e.g. 18.5"
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base outline-none focus:ring-2 focus:ring-purple-500"
             />
@@ -54,6 +117,7 @@ const CreateProductForm = () => {
             </label>
             <input
               type="number"
+              name="max_price"
               placeholder="Optional (default = Min Price)"
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base outline-none focus:ring-2 focus:ring-purple-500"
             />
@@ -107,6 +171,7 @@ const CreateProductForm = () => {
             </label>
             <input
               type="url"
+              name="productImage"
               placeholder="https://..."
               className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 text-sm sm:text-base outline-none focus:ring-2 focus:ring-purple-500"
             />

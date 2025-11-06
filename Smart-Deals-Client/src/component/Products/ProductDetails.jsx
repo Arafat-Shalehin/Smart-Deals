@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useLoaderData } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 const ProductDetails = () => {
   const product = useLoaderData();
@@ -34,18 +35,35 @@ const ProductDetails = () => {
     status,
   } = product;
 
+  // useEffect(() => {
+  //   fetch(`http://localhost:3000/products/bids/${_id}`, {
+  //     headers: {
+  //       authorization: `Bearer ${user.accessToken}`
+  //     }
+  //   })
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       console.log("Bids for this product", data);
+  //       setBids(data);
+  //     });
+  // }, [_id, user]);
   useEffect(() => {
-    fetch(`http://localhost:3000/products/bids/${_id}`, {
-      headers: {
-        authorization: `Bearer ${user.accessToken}`
-      }
+    // fetch(`http://localhost:3000/products/bids/${_id}`, {
+    //   headers: {
+    //     authorization: `Bearer ${user.accessToken}`
+    //   }
+    // })
+    //   .then((res) => res.json())
+    //   .then((data) => {
+    //     console.log("Bids for this product", data);
+    //     setBids(data);
+    //   });
+
+    axios.get(`http://localhost:3000/products/bids/${_id}`)
+    .then(data => {
+      setBids(data.data);
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Bids for this product", data);
-        setBids(data);
-      });
-  }, [_id, user]);
+  }, [_id]);
 
   const [showOfferModal, setShowOfferModal] = useState(false);
 

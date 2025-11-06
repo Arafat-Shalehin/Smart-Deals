@@ -142,7 +142,7 @@ async function run() {
       res.send(result);
     })
 
-    app.post('/products', async(req, res) => {
+    app.post('/products', verifyFirebaseToken, async(req, res) => {
       const newProduct = req.body;
       const result = await productsCollection.insertOne(newProduct);
       res.send(result);
